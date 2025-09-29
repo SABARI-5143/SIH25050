@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera Feeds</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>Camera Monitoring System</h2>
+      <ul>
+        <li><a href="index.html">Dashboard</a></li>
+        <li><a class="active" href="camera.html">Camera Feeds</a></li>
+        <li><a href="report.html">Report</a></li>
+        <li><a href="setting.html">Setting</a></li>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+      <h1>Camera Details</h1>
+      <div class="camera-container">
+        
+        <!-- Camera 1 -->
+        <div class="camera-box">
+          <h3>Live Camera 1</h3>
+          <img id="cam1" src="http://127.0.0.1:5000/video" width="100%" alt="Live Camera 1 Feed">
+        </div>
+
+        <!-- Camera 2 -->
+        <div class="camera-box">
+          <h3>Live Camera 2</h3>
+          <img id="cam2" src="http://127.0.0.1:5000/video2" width="100%" alt="Live Camera 2 Feed">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Reconnect Logic -->
+  <script>
+    function keepAlive(imgId, url) {
+      const img = document.getElementById(imgId);
+      img.onerror = () => {
+        console.log(imgId + " stream dropped. Reconnecting...");
+        img.src = url + "?cacheBust=" + new Date().getTime();
+      };
+    }
+
+    // Apply to both cameras
+    keepAlive("cam1", "http://127.0.0.1:5000/video");
+    keepAlive("cam2", "http://127.0.0.1:5000/video2");
+  </script>
+</body>
+</html>

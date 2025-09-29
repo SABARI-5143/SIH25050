@@ -1,0 +1,73 @@
+#include <TM1637Display.h>
+
+
+int R1 = 2, Y1 = 3, G1 = 4;
+int R2 = 5, Y2 = 6, G2 = 7;
+#define CLK1 8
+#define DIO1 9
+#define CLK2 10
+#define DIO2 11
+
+TM1637Display display1(CLK1, DIO1);
+TM1637Display display2(CLK2, DIO2);
+
+
+int totalTime = 60;   
+int yellowTime = 5;   
+int green1, green2;   
+
+int count1 = 40; 
+int count2 = 20;  // Road 2 (low traffic)
+
+void setup() {
+  Serial.begin(9600);
+
+
+  pinMode(R1, OUTPUT); pinMode(Y1, OUTPUT); pinMode(G1, OUTPUT);
+  pinMode(R2, OUTPUT); pinMode(Y2, OUTPUT); pinMode(G2, OUTPUT);
+
+
+  display1.setBrightness(0x0f);
+  display2.setBrightness(0x0f);
+  display1.showNumberDec(0);
+  display2.showNumberDec(0);
+
+
+  int totalCount = count1 + count2;
+  green1 = (count1 * (totalTime - 2 * yellowTime)) / totalCount;
+  green2 = (count2 * (totalTime - 2 * yellowTime)) / totalCount;
+
+  Serial.print("Road 1 Green: "); Serial.println(green1);
+  Serial.print("Road 2 Green: "); Serial.println(green2);
+}
+
+void loop() {
+
+  digitalWrite(G1, HIGH); digitalWrite(R2, HIGH); digitalWrite(R1, LOW); digitalWrite(Y1, LOW);
+  countdown(green1, display1);
+
+
+  digitalWrite(G1, LOW); digitalWrite(Y1, HIGH);
+  countdown(yellowTime, display1);
+  digitalWrite(Y1, LOW);
+
+  
+  digitalWrite(G2, HIGH); digitalWrite(R1, HIGH); digitalWrite(R2, LOW); digitalWrite(Y2, LOW);
+  countdown(green2, display2);
+
+  // Road 2 YELLOW
+  digitalWrite(G2, LOW); digitalWrite(Y2, HIGH);
+  countdown(yellowTime, display2);
+  digitalWrite(Y2, LOW);
+}
+
+// Countdown function for TM1637 display
+void countdown(int seconds, TM1637Display &display) {
+  for (int i = seconds; i >= 0; i--) {
+    unsigned long startTime = millis();
+    while (millis() - startTime < 1000) {
+      display.showNumberDec(i, true);
+      delay(5);
+    }
+  }
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera Monitoring System</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .frame-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .frame-box img {
+      width: 200px;
+      height: auto;
+      border: 2px solid #333;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>Camera Monitoring System</h2>
+      <ul>
+        <li><a href="index.html">Dashboard</a></li>
+        <li><a href="camera.html">Camera Feeds</a></li>
+        <li><a href="report.html">Report</a></li>
+        <li><a href="setting.html">Setting</a></li>
+      </ul>
+    </div>
+<!-- Main Content -->
+<div class="main" > <!-- keep sidebar space -->
+  <h1>Dashboard</h1>
+  <p>Recent YOLO-detected frames:</p>
+
+  <div id="frame-box" style="
+      display:flex; 
+      flex-wrap:wrap; 
+      gap:20px; 
+      justify-content:flex-start;
+  ">
+<!-- Static frames -->
+<div style="display:flex; justify-content:center; margin-bottom:15px;">
+  <img src="detected_frames/frame_12.jpg" alt="Frame 12" 
+       style="width:35%; height:auto; border:2px solid #333; border-radius:6px; 
+              box-shadow:2px 2px 6px rgba(0,0,0,0.25); padding:4px; margin:8px;">
+  <img src="detected_frames/frame_13.jpg" alt="Frame 13" 
+       style="width:35%; height:auto; border:2px solid #333; border-radius:6px; 
+              box-shadow:2px 2px 6px rgba(0,0,0,0.25); padding:4px; margin:8px;">
+</div>
+
+<div style="display:flex; justify-content:center; margin-bottom:15px;">
+  <img src="detected_frames/frame_20.jpg" alt="Frame 20" 
+       style="width:35%; height:auto; border:2px solid #333; border-radius:6px; 
+              box-shadow:2px 2px 6px rgba(0,0,0,0.25); padding:4px; margin:8px;">
+  <img src="detected_frames/frame_21.jpg" alt="Frame 21" 
+       style="width:35%; height:auto; border:2px solid #333; border-radius:6px; 
+              box-shadow:2px 2px 6px rgba(0,0,0,0.25); padding:4px; margin:8px;">
+</div>
+
+  <!-- Optional Script to auto-load latest frames -->
+  <script>
+    async function loadFrames() {
+      try {
+        let res = await fetch("http://127.0.0.1:5000/dashboard_frames");
+        let data = await res.json();
+        let box = document.getElementById("frame-box");
+        box.innerHTML = ""; // Clear previous frames
+
+        // Display only the specific frames you want
+        const selectedFrames = ["frame_12.jpg","frame_13.jpg","frame_14.jpg",
+                                "frame_15.jpg","frame_16.jpg","frame_19.jpg",
+                                "frame_20.jpg"];
+
+        selectedFrames.forEach(name => {
+          const fullUrl = data.frames.find(f => f.endsWith(name));
+          if (fullUrl) {
+            let img = document.createElement("img");
+            img.src = "http://127.0.0.1:5000" + fullUrl;
+            box.appendChild(img);
+          }
+        });
+
+      } catch (err) {
+        console.error("Error loading frames:", err);
+      }
+    }
+
+    // Load immediately + refresh every 5 seconds
+    loadFrames();
+    setInterval(loadFrames, 5000);
+  </script>
+</body>
+</html>
